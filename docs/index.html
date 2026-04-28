@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnsplashPaper — A new wallpaper, every day</title>
+    <meta name="description" content="A lightweight Windows app that automatically sets stunning Unsplash photos as your desktop wallpaper.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0b;
+            --bg-elevated: #141416;
+            --bg-card: #1a1a1e;
+            --border: #2a2a30;
+            --text: #e8e6e3;
+            --text-muted: #8a8890;
+            --accent: #c4a46c;
+            --accent-dim: rgba(196, 164, 108, 0.12);
+            --serif: 'DM Serif Display', Georgia, serif;
+            --sans: 'Outfit', system-ui, sans-serif;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a { color: var(--accent); text-decoration: none; transition: opacity 0.2s; }
+        a:hover { opacity: 0.8; }
+
+        /* ── Grain overlay ── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 200px;
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(10,10,11,0.9), transparent);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .nav-brand {
+            font-family: var(--serif);
+            font-size: 1.2rem;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); opacity: 1; }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(196,164,108,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 32px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.2s;
+        }
+
+        .hero h1 {
+            font-family: var(--serif);
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 400;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 28px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.4s;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 480px;
+            margin-bottom: 48px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.6s;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.8s;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            font-family: var(--sans);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+        .btn-primary:hover {
+            background: #d4b87c;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 30px rgba(196,164,108,0.2);
+            opacity: 1;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover {
+            color: var(--text);
+            border-color: var(--text-muted);
+            opacity: 1;
+        }
+
+        .download-platforms {
+            margin-top: 28px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 1s;
+        }
+        .download-platforms a {
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .download-platforms a:hover { color: var(--accent); border-color: var(--accent); opacity: 1; }
+        .download-platforms .sep { margin: 0 6px; opacity: 0.4; }
+
+        /* ── Section ── */
+        .section {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 100px 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-family: var(--serif);
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
+
+        /* ── Features grid ── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .feature {
+            background: var(--bg-elevated);
+            padding: 40px 32px;
+            transition: background 0.3s ease;
+        }
+
+        .feature:hover {
+            background: var(--bg-card);
+        }
+
+        .feature-number {
+            font-family: var(--serif);
+            font-size: 2rem;
+            color: var(--accent);
+            opacity: 0.4;
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+
+        .feature h3 {
+            font-family: var(--sans);
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            letter-spacing: -0.01em;
+        }
+
+        .feature p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ── Steps ── */
+        .steps {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .step {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 36px 32px;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+
+        .step:hover { border-color: var(--accent); }
+
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .step h3 {
+            font-family: var(--sans);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .step p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .step a { border-bottom: 1px solid rgba(196,164,108,0.3); }
+        .step a:hover { border-bottom-color: var(--accent); }
+
+        /* ── Detailed guide ── */
+        .guide {
+            max-width: 680px;
+            margin: -40px auto 0;
+            padding: 0 24px 100px;
+        }
+
+        .guide-intro {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 48px;
+            line-height: 1.7;
+        }
+
+        .guide-steps {
+            list-style: none;
+            counter-reset: guide-step;
+        }
+
+        .guide-steps > li {
+            counter-increment: guide-step;
+            position: relative;
+            padding-left: 48px;
+            padding-bottom: 40px;
+            border-left: 1px solid var(--border);
+            margin-left: 15px;
+        }
+
+        .guide-steps > li:last-child {
+            border-left: 1px solid transparent;
+            padding-bottom: 0;
+        }
+
+        .guide-steps > li::before {
+            content: counter(guide-step);
+            position: absolute;
+            left: -16px;
+            top: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .guide-steps > li h4 {
+            font-family: var(--sans);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .guide-steps > li p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+
+        .guide-warning {
+            margin-top: 12px;
+            padding: 14px 18px;
+            background: rgba(220, 140, 60, 0.08);
+            border: 1px solid rgba(220, 140, 60, 0.2);
+            border-radius: 8px;
+            font-size: 0.84rem;
+            color: #d4a056;
+            line-height: 1.6;
+        }
+
+        .guide-warning strong {
+            color: #e0b060;
+        }
+
+        /* ── FAQ / Notice ── */
+        .faq {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px 100px;
+        }
+
+        .faq-item {
+            border-top: 1px solid var(--border);
+            padding: 32px 0;
+        }
+
+        .faq-item h3 {
+            font-family: var(--serif);
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 12px;
+        }
+
+        .faq-item p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* ── Divider ── */
+        .divider {
+            max-width: 1080px;
+            margin: 0 auto;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── Footer ── */
+        footer {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        footer a { color: var(--text-muted); }
+        footer a:hover { color: var(--text); }
+
+        .footer-links { display: flex; gap: 24px; }
+
+        /* ── Animations ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            nav { padding: 16px 20px; }
+            .nav-links { gap: 20px; }
+            .nav-links a { font-size: 0.78rem; }
+
+            .features-grid { grid-template-columns: 1fr; }
+            .steps { grid-template-columns: 1fr; }
+
+            footer {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links { display: none; }
+            .hero-actions { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 280px; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+    <div class="nav-brand">UnsplashPaper</div>
+    <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#setup">Setup</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://github.com/Teyk0o/unsplashpaper">GitHub</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <p class="hero-label">Open source wallpaper manager for Windows</p>
+    <h1>A new wallpaper,<br><em>every day</em></h1>
+    <p class="hero-sub">UnsplashPaper sits quietly in your system tray and refreshes your desktop with curated photography from Unsplash. No effort required.</p>
+    <div class="hero-actions">
+        <a href="https://github.com/Teyk0o/unsplashpaper/releases/latest" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 12L3 7h3V2h4v5h3L8 12z" fill="currentColor"/><path d="M2 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Download
+        </a>
+        <a href="https://github.com/Teyk0o/unsplashpaper" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            View source
+        </a>
+    </div>
+    <div class="download-platforms">
+        <span>Available for:</span>
+        <a href="https://github.com/Teyk0o/unsplashpaper/releases/latest">Windows (.exe installer)</a>
+        <span class="sep">/</span>
+        <a href="https://github.com/Teyk0o/unsplashpaper/releases/latest">macOS (.dmg)</a>
+        <span class="sep">/</span>
+        <a href="https://github.com/Teyk0o/unsplashpaper/releases/latest">Linux (.deb, .AppImage)</a>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+    <div class="section-header">
+        <p class="section-label">Features</p>
+        <h2>Everything you need, nothing you don't</h2>
+    </div>
+    <div class="features-grid">
+        <div class="feature">
+            <div class="feature-number">01</div>
+            <h3>Automatic refresh</h3>
+            <p>Choose your interval: every hour, every day, or anything in between. Your wallpaper updates itself in the background.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-number">02</div>
+            <h3>Skip or like</h3>
+            <p>Not feeling the current photo? Skip to the next one. Love it? Like it to save the photographer and Unsplash link to your favorites.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-number">03</div>
+            <h3>Curated categories</h3>
+            <p>Nature, architecture, space, minimalism, ocean, or any keyword you can think of. Change your category anytime from the settings.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-number">04</div>
+            <h3>Photographer credit</h3>
+            <p>Every wallpaper notification shows the photographer's name. Open their Unsplash profile directly from the tray menu.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-number">05</div>
+            <h3>Start with your system</h3>
+            <p>One toggle in the menu to launch UnsplashPaper when your computer starts. Works on Windows, macOS, and Linux. No admin rights required.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-number">06</div>
+            <h3>Minimal footprint</h3>
+            <p>Only one image file on disk at any time. No background collection, no storage bloat. Just the current wallpaper.</p>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Getting Started -->
+<section class="section" id="setup">
+    <div class="section-header">
+        <p class="section-label">Getting started</p>
+        <h2>Up and running in five minutes</h2>
+    </div>
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <h3>Get a free API key</h3>
+            <p>You need to create a free Unsplash developer account to get an API key. This is a one-time step that takes a few minutes. See the detailed guide below.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <h3>Download and install</h3>
+            <p>Grab the installer from the <a href="https://github.com/Teyk0o/unsplashpaper/releases/latest">latest release</a> page. Run it and click through the setup like any other program.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <h3>Configure on first launch</h3>
+            <p>UnsplashPaper opens a settings window on first run. Paste your API key, choose a photo category and resolution, then hit Save.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">4</div>
+            <h3>That's it</h3>
+            <p>The app lives in your system tray. Right-click the icon for all options: next wallpaper, like, settings, auto-start, and more.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Detailed API key guide -->
+<div class="guide" id="api-guide">
+    <p class="guide-intro">
+        The API key lets UnsplashPaper access photos from Unsplash on your behalf.<br>
+        It is completely free and only needs to be done once. Follow these steps carefully.
+    </p>
+    <ol class="guide-steps">
+        <li>
+            <h4>Create an Unsplash account</h4>
+            <p>Go to <a href="https://unsplash.com/join">unsplash.com/join</a> and sign up with your email address. If you already have an Unsplash account, skip to the next step.</p>
+        </li>
+        <li>
+            <h4>Go to the developer page</h4>
+            <p>Once logged in, go to <a href="https://unsplash.com/oauth/applications">unsplash.com/oauth/applications</a>. This is where you manage your developer applications. Click the <strong>New Application</strong> button.</p>
+        </li>
+        <li>
+            <h4>Accept the terms</h4>
+            <p>Unsplash will show you their API usage guidelines. Check all the boxes to accept the terms, then click <strong>Accept terms</strong>.</p>
+        </li>
+        <li>
+            <h4>Fill in the application details</h4>
+            <p>You need to give your application a name and a short description. You can use anything you like, for example:</p>
+            <p><strong>Name:</strong> My Photo App</p>
+            <p><strong>Description:</strong> A personal app to browse photos</p>
+            <div class="guide-warning">
+                <strong>Important:</strong> Do not use the words "wallpaper", "fond d'ecran", "background", or "screensaver" in the name or description. Unsplash automatically rejects applications containing these terms. Use a neutral name instead.
+            </div>
+        </li>
+        <li>
+            <h4>Copy your Access Key</h4>
+            <p>After creating the application, you will see a page with your app details. Look for the field labeled <strong>Access Key</strong> (not "Secret Key"). It is a long string of letters and numbers. Select it and copy it.</p>
+            <p>This is the key you will paste into UnsplashPaper on first launch.</p>
+        </li>
+    </ol>
+</div>
+
+<div class="divider"></div>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+    <div class="section-header">
+        <p class="section-label">FAQ</p>
+        <h2>Common questions</h2>
+    </div>
+</section>
+
+<div class="faq">
+    <div class="faq-item">
+        <h3>Why do I need an API key?</h3>
+        <p>Unsplash requires every application to authenticate with an API key to serve photos. Creating one is free and takes under a minute. The free tier allows 50 requests per hour, which is far more than you will ever need since UnsplashPaper only makes one request per wallpaper change.</p>
+    </div>
+    <div class="faq-item">
+        <h3>Is my API key safe?</h3>
+        <p>Your key is stored locally in a configuration file on your computer. It is never transmitted anywhere other than directly to the Unsplash API. The application is fully open source, so you can verify this yourself.</p>
+    </div>
+    <div class="faq-item">
+        <h3>Does it use a lot of storage?</h3>
+        <p>No. UnsplashPaper keeps exactly one image on disk: the current wallpaper. Each time a new photo is fetched, the previous file is replaced. Liked wallpapers are saved as metadata only, not as image files.</p>
+    </div>
+    <div class="faq-item">
+        <h3>Can I change the category later?</h3>
+        <p>Yes. Right-click the tray icon, open Settings, and change the category, resolution, or refresh interval at any time. The next wallpaper will use your new preferences.</p>
+    </div>
+    <div class="faq-item">
+        <h3>Does it work offline?</h3>
+        <p>UnsplashPaper needs an internet connection to fetch new photos. If you are offline, it simply keeps the current wallpaper until the next successful refresh.</p>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="divider"></div>
+<footer>
+    <span>Built by <a href="https://github.com/Teyk0o">Teyk0o</a> &mdash; Photos by <a href="https://unsplash.com/?utm_source=unsplashpaper&utm_medium=referral">Unsplash</a></span>
+    <div class="footer-links">
+        <a href="https://github.com/Teyk0o/unsplashpaper">Source</a>
+        <a href="https://github.com/Teyk0o/unsplashpaper/releases/latest">Releases</a>
+        <a href="https://github.com/Teyk0o/unsplashpaper/issues">Issues</a>
+    </div>
+</footer>
+
+</body>
+</html>
